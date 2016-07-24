@@ -7,7 +7,8 @@ pub struct SysTick {
     reload: Volatile<u32>,
     // VAL
     value: Volatile<u32>,
-    // CALIB
+    // CALIB (currently not used)
+    #[allow(dead_code)]
     calibration: Volatile<u32>,
 }
 

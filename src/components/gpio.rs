@@ -1,5 +1,5 @@
 use core::convert::Into;
-use core::{cell, ops};
+use core::ops;
 use ::base::volatile::{Volatile, VolatileStruct};
 
 #[derive(Clone, Copy, Debug)]
@@ -276,33 +276,3 @@ macro_rules! gpio_setup {
         $(let $var_name = unsafe { $var_name.$direction() })*;
     )
 }
-
-fn foo(bank: &'static mut GPIOBank) {
-    let pins = bank.split();
-
-    let GPIOPins{
-        pin_0: _pin_a,
-        pin_1: _pin_b,
-        ..
-    } = pins;
-
-    let pin_a = unsafe { _pin_a.output() };
-    let pin_b = unsafe { _pin_b.output() };
-
-    pin_a.set_output(GPIOOutput::High);
-}
-
-fn foo_with_macro(bank: &'static mut GPIOBank) {
-    gpio_setup!(bank.split(), {
-        pin_a = output(pin_1);
-        pin_b = output(pin_2);
-        pin_c = output(pin_4);
-    });
-
-    pin_a.set_output(GPIOOutput::High);
-}
-
-
-// IDEA: Try |'ing GPIOPin objects to set multiple?
-// IDEA: Use associated constants (HW addresses) to get compile time validity
-//       and avoid register usage?

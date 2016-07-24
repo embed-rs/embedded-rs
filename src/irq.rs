@@ -54,14 +54,14 @@ pub struct MaskMutexGuard<'a, R: MaskRegister + 'a, T: 'a> {
 }
 
 impl<'a, R: MaskRegister, T> MaskMutex<R, T> {
-    fn new(p: R, t: T) -> MaskMutex<R, T> {
+    pub fn new(p: R, t: T) -> MaskMutex<R, T> {
         MaskMutex{
             data: UnsafeCell::new(t),
             reg: UnsafeCell::new(p),
         }
     }
 
-    fn lock(&'a self) -> MaskMutexGuard<'a, R, T> {
+    pub fn lock(&'a self) -> MaskMutexGuard<'a, R, T> {
         let reg = unsafe { &mut *self.reg.get() };
 
         // Note: Locks can never be poisoned, as we don't have "real"
@@ -77,7 +77,7 @@ impl<'a, R: MaskRegister, T> MaskMutex<R, T> {
         }
     }
 
-    fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T {
         unsafe { self.data.into_inner() }
     }
 }
