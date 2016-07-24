@@ -7,12 +7,12 @@
 #![feature(unwind_attributes)]
 #![no_std]
 
+pub mod boards;
+pub mod core;
 pub mod irq;
 pub mod runtime;
 pub mod util;
 
-// board-specific stuff
-pub mod stm32f429i;
 
 pub type InterruptHandler = extern "C" fn() -> ();
 

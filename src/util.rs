@@ -1,5 +1,6 @@
 #[inline(always)]
 pub fn keep() {
+    // FIXME: gate on arm architecture
     unsafe {
         asm!("");
     }
@@ -7,6 +8,7 @@ pub fn keep() {
 
 #[inline(always)]
 pub fn nop() {
+    // FIXME: gate using arm architecture
     unsafe {
         asm!("NOP" : : : "{}" : "volatile");
     }
