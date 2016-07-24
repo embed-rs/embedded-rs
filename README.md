@@ -1,13 +1,13 @@
-Rust on the STM32-Discovery board family
-========================================
+Rust embedded development
+=========================
 
-The `stm32` crates strives to make development on the [STM32-Discovery](www.st.com/stm32-discovery) uncomplicated and fun without sacrificing suitability for serious application development. It consists of a minimal "runtime" needed to compile Rust programs for these boards and an optional small layer of hardware abstraction.
+The `embed` crates strives to make development on the embedded board safe and fun. It provides the minimal required runtime and abstractions for common hardware concepts as well as a library for some boards.
 
 
 Getting started
 ---------------
 
-The following are requisites for `stm32` development:
+The following are requisites for embedded development:
 
 1. A working Rust nightly, [https://www.rustup.rs](rustup.rs) is highly recommeded.
 2. A linker that can link for the target platform, like `arm-none-eabi-gcc`.
