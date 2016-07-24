@@ -5,6 +5,7 @@ use core::ops::{Deref, DerefMut, Drop};
 ///
 /// Implemented using a single instruction. Does not affect NMI and
 /// HardFault.
+#[cfg(target_arch = "arm")]
 unsafe fn enable_irq() {
     asm!("CPSIE i" : : : "{}" : "volatile");
 }
@@ -12,6 +13,7 @@ unsafe fn enable_irq() {
 /// Disables IRQs (enables PRIMASK)
 ///
 /// Implemented using a single instruction.
+#[cfg(target_arch = "arm")]
 unsafe fn disable_irq() {
     asm!("CPSID i" : : : "{}" : "volatile");
 }
@@ -19,6 +21,7 @@ unsafe fn disable_irq() {
 /// Enable IRQs (disables FAULTMASK)
 ///
 /// Implemented using a single instruction. Does not affect NMI.
+#[cfg(target_arch = "arm")]
 unsafe fn enable_fault_irq() {
     asm!("CPSIE f" : : : "{}" : "volatile");
 }
@@ -26,6 +29,7 @@ unsafe fn enable_fault_irq() {
 /// Disables IRQs (enables FAULTMASK)
 ///
 /// Implemented using a single instruction.
+#[cfg(target_arch = "arm")]
 unsafe fn disable_fault_irq() {
     asm!("CPSID f" : : : "{}" : "volatile");
 }
