@@ -8,6 +8,7 @@
 #![no_std]
 
 pub mod boards;
+pub mod components;
 pub mod core;
 pub mod irq;
 pub mod runtime;
