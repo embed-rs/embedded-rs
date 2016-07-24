@@ -1,4 +1,4 @@
-use super::InterruptHandler;
+use ::InterruptHandler;
 
 #[repr(C)]
 pub struct VectorTable {

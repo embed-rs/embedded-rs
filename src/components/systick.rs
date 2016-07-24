@@ -1,4 +1,4 @@
-use super::register::{Volatile, VolatileStruct};
+use ::base::volatile::{Volatile, VolatileStruct};
 
 pub struct SysTick {
     // CTRL

@@ -1,6 +1,6 @@
 use core::convert::Into;
 use core::{cell, ops};
-use super::register::{Volatile, VolatileStruct};
+use ::base::volatile::{Volatile, VolatileStruct};
 
 #[derive(Clone, Copy, Debug)]
 pub enum GPIONum {
@@ -268,7 +268,7 @@ macro_rules! gpio_setup {
         // need:
         // #[allow(non_shorthand_field_patterns)]
         // somehow here or globally
-        let ::gpio::GPIOPins{
+        let GPIOPins{
             $($pin_name: $var_name,)*
             ..
         } = $pins;
