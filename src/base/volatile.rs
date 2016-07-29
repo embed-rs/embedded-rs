@@ -1,11 +1,8 @@
+//! Undocumented prerelease of volatile module.
+//!
+//! When using, please pin to version 0.2.
+
 use core::{ops, ptr};
-
-// consider: http://stackoverflow.com/questions/35009015/how-do-i-write-to-a-memory-mapped-address-in-rust
-//           also, implement operators for Volatile?
-
-// mem::swap: requires immovable trait or volatile stuff ("future work")
-
-// many thanks to talchas from rust irc
 
 #[repr(C)]
 pub struct Volatile<T>(T);
