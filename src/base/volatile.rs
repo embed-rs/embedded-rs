@@ -21,6 +21,16 @@ impl<T> Volatile<T> {
     pub fn write(&mut self, src: T) {
         unsafe { ptr::write_volatile(&mut self.0, src) }
     }
+
+    /// Updates the register value
+    #[inline(always)]
+    pub fn update<F>(&mut self, f: F)
+        where F: FnOnce(&mut T)
+    {
+        let mut value = self.read();
+        f(&mut value);
+        self.write(value);
+    }
 }
 
 impl<T> ops::BitOrAssign<T> for Volatile<T>
