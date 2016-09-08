@@ -55,7 +55,7 @@ pub struct MaskMutexGuard<'a, R: MaskRegister + 'a, T: 'a> {
 
 impl<'a, R: MaskRegister, T> MaskMutex<R, T> {
     pub fn new(p: R, t: T) -> MaskMutex<R, T> {
-        MaskMutex{
+        MaskMutex {
             data: UnsafeCell::new(t),
             reg: UnsafeCell::new(p),
         }

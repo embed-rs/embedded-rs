@@ -21,7 +21,7 @@ pub mod util;
 pub type InterruptHandler = extern "C" fn() -> ();
 
 #[allow(improper_ctypes)]
-extern {
+extern "C" {
     static _STACK_TOP: ();
 }
 

@@ -1,6 +1,7 @@
 use core::{ops, ptr};
 
-// consider: http://stackoverflow.com/questions/35009015/how-do-i-write-to-a-memory-mapped-address-in-rust
+// consider:
+// http://stackoverflow.com/questions/35009015/how-do-i-write-to-a-memory-mapped-address-in-rust
 //           also, implement operators for Volatile?
 
 // mem::swap: requires immovable trait or volatile stuff ("future work")
@@ -13,21 +14,17 @@ pub struct Volatile<T>(T);
 impl<T> Volatile<T> {
     #[inline(always)]
     pub fn read(&self) -> T {
-        unsafe {
-            ptr::read_volatile(&self.0 as *const T)
-        }
+        unsafe { ptr::read_volatile(&self.0 as *const T) }
     }
 
     #[inline(always)]
     pub fn write(&mut self, src: T) {
-        unsafe {
-            ptr::write_volatile(&mut self.0, src)
-        }
+        unsafe { ptr::write_volatile(&mut self.0, src) }
     }
 }
 
 impl<T> ops::BitOrAssign<T> for Volatile<T>
-where T: ops::BitOr<T, Output=T>
+    where T: ops::BitOr<T, Output = T>
 {
     #[inline(always)]
     fn bitor_assign(&mut self, val: T) {
@@ -37,7 +34,7 @@ where T: ops::BitOr<T, Output=T>
     }
 }
 
-pub trait VolatileStruct : Sized {
+pub trait VolatileStruct: Sized {
     #[inline(always)]
     unsafe fn from_ptr(addr: *mut Self) -> &'static mut Self {
         let item: &'static mut Self = &mut *addr;

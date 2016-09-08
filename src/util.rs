@@ -22,7 +22,7 @@ pub fn nop() {
 /// Compiling without --release will cause this function to take between 10 to
 /// 30 times as long, making it quite unuseable.
 pub fn delay(n: usize) {
-    for _ in 0..(n/2) {
+    for _ in 0..(n / 2) {
         // example loop disassembly:
         //   8010080:    3801          subs    r0, #1
         //   8010082:    d1fd          bne.n    8010080
