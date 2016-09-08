@@ -1,0 +1,35 @@
+//! RCC APB1 peripheral clock enable register (RCC_APB1ENR)
+
+bitflags! {
+    pub flags Register: u32 {
+        const TIM_2_ENABLE = 1 << 0,
+        const TIM_3_ENABLE = 1 << 1,
+        const TIM_4_ENABLE = 1 << 2,
+        const TIM_5_ENABLE = 1 << 3,
+        const TIM_6_ENABLE = 1 << 4,
+        const TIM_7_ENABLE = 1 << 5,
+        const TIM_12_ENABLE = 1 << 6,
+        const TIM_13_ENABLE = 1 << 7,
+        const TIM_14_ENABLE = 1 << 8,
+        const LPTIM_1_ENABLE = 1 << 9,
+        const WWDG_ENABLE = 1 << 11,
+        const SPI_2_ENABLE = 1 << 14,
+        const SPI_3_ENABLE = 1 << 15,
+        const SPDIFRX_ENABLE = 1 << 16,
+        const USART_2_ENABLE = 1 << 17,
+        const USART_3_ENABLE = 1 << 18,
+        const UART_4_ENABLE = 1 << 19,
+        const UART_5_ENABLE = 1 << 20,
+        const I2C_1_ENABLE = 1 << 21,
+        const I2C_2_ENABLE = 1 << 22,
+        const I2C_3_ENABLE = 1 << 23,
+        const I2C_4_ENABLE = 1 << 24,
+        const CAN_1_ENABLE = 1 << 25,
+        const CAN_2_ENABLE = 1 << 26,
+        const CEC_ENABLE = 1 << 27,
+        const PWR_ENABLE = 1 << 28,
+        const DAC_ENABLE = 1 << 29,
+        const UART_7_ENABLE = 1 << 30,
+        const UART_8_ENABLE = 1 << 31,
+    }
+}
