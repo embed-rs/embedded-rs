@@ -4,3 +4,5 @@ name = "embedded"
 version = "0.2.0"
 
 [dependencies]
+bit_field = "0.4.0"
+bitflags = "0.7.0"

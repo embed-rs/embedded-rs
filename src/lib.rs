@@ -7,6 +7,10 @@
 #![feature(unwind_attributes)]
 #![no_std]
 
+#[macro_use]
+extern crate bitflags;
+extern crate bit_field;
+
 pub mod base;
 pub mod boards;
 pub mod components;
