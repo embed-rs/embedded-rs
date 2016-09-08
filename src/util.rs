@@ -10,7 +10,7 @@ pub fn keep() {
 pub fn nop() {
     // FIXME: gate using arm architecture
     unsafe {
-        asm!("NOP" : : : "{}" : "volatile");
+        asm!("NOP" : : : : "volatile");
     }
 }
 
