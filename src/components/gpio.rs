@@ -76,7 +76,7 @@ pub enum PortMode {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct PortModeSet{
+pub struct PortModeSet {
     val: u32,
     mask: u32,
 }
@@ -85,22 +85,30 @@ impl Into<PortModeSet> for PortMode {
     #[inline(always)]
     fn into(self) -> PortModeSet {
         match self {
-            PortMode::Input(n) => PortModeSet{
-                val: 0b00 << (n as u8 * 2),
-                mask: !(0b11 << (n as u8 * 2)),
-            },
-            PortMode::Output(n) => PortModeSet{
-                val: 0b01 << (n as u8 * 2),
-                mask: !(0b11 << (n as u8 * 2)),
-            },
-            PortMode::Alternate(n) => PortModeSet{
-                val: 0b10 << (n as u8 * 2),
-                mask: !(0b11 << (n as u8 * 2)),
-            },
-            PortMode::Analog(n) => PortModeSet{
-                val: 0b11 << (n as u8 * 2),
-                mask: !(0b11 << (n as u8 * 2)),
-            },
+            PortMode::Input(n) => {
+                PortModeSet {
+                    val: 0b00 << (n as u8 * 2),
+                    mask: !(0b11 << (n as u8 * 2)),
+                }
+            }
+            PortMode::Output(n) => {
+                PortModeSet {
+                    val: 0b01 << (n as u8 * 2),
+                    mask: !(0b11 << (n as u8 * 2)),
+                }
+            }
+            PortMode::Alternate(n) => {
+                PortModeSet {
+                    val: 0b10 << (n as u8 * 2),
+                    mask: !(0b11 << (n as u8 * 2)),
+                }
+            }
+            PortMode::Analog(n) => {
+                PortModeSet {
+                    val: 0b11 << (n as u8 * 2),
+                    mask: !(0b11 << (n as u8 * 2)),
+                }
+            }
         }
     }
 }
@@ -121,7 +129,7 @@ impl ops::BitOr for PortModeSet {
 
     #[inline(always)]
     fn bitor(self, rhs: Self) -> Self::Output {
-        PortModeSet{
+        PortModeSet {
             val: self.val | rhs.val,
             mask: self.mask & rhs.mask,
         }
@@ -175,7 +183,7 @@ impl GPIOBank {
         // FIXME: Add PhantomData to keep a reference to GPIOBank in Pins. Goal
         //        Use non-static mut?
         // FIXEDME: turns out, it's fine.
-        GPIOPins{
+        GPIOPins {
             pin_0: GPIOPin::from_bank(self as *mut GPIOBank, GPIONum::GPIO0),
             pin_1: GPIOPin::from_bank(self as *mut GPIOBank, GPIONum::GPIO1),
             pin_2: GPIOPin::from_bank(self as *mut GPIOBank, GPIONum::GPIO2),
@@ -205,16 +213,13 @@ pub struct GPIOPin {
 
 impl GPIOPin {
     fn from_bank(bank: *mut GPIOBank, n: GPIONum) -> GPIOPin {
-        GPIOPin{
-            bank: bank,
-            n: n,
-        }
+        GPIOPin { bank: bank, n: n }
     }
 
     // unsafe, because it requires shared access to the bank
     pub unsafe fn output(self) -> GPIOOutputPin {
         (&mut *self.bank).set_mode(PortMode::Output(self.n));
-        GPIOOutputPin{
+        GPIOOutputPin {
             bank: self.bank,
             n: self.n,
         }
