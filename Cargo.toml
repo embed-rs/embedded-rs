@@ -1,6 +1,6 @@
 [package]
+authors = ["Marc Brinkmann <git@marcbrinkmann.de>", "Philipp Oppermann <dev@phil-opp.com>"]
 name = "embedded"
 version = "0.2.0"
-authors = ["Marc Brinkmann <git@marcbrinkmann.de>"]
 
 [dependencies]
