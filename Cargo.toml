@@ -1,5 +1,5 @@
 [package]
-name = "embed"
+name = "embedded"
 version = "0.2.0"
 authors = ["Marc Brinkmann <git@marcbrinkmann.de>"]
 
