@@ -72,6 +72,41 @@ pub struct RccBank {
     dckcfgr2: u32,
 }
 
-impl RccBank {}
+impl RccBank {
+    pub fn enable_all_gpio_ports(&mut self) {
+        self.ahb1_enr.update(|r| {
+            r.insert(ahb1_enr::GPIO_A_ENABLE | ahb1_enr::GPIO_B_ENABLE | ahb1_enr::GPIO_C_ENABLE |
+                     ahb1_enr::GPIO_D_ENABLE |
+                     ahb1_enr::GPIO_E_ENABLE | ahb1_enr::GPIO_F_ENABLE |
+                     ahb1_enr::GPIO_G_ENABLE |
+                     ahb1_enr::GPIO_H_ENABLE |
+                     ahb1_enr::GPIO_I_ENABLE |
+                     ahb1_enr::GPIO_J_ENABLE | ahb1_enr::GPIO_K_ENABLE)
+        });
+    }
+
+    pub fn reset_all_gpio_ports(&mut self) {
+        // set reset bits
+        self.ahb1_rstr.update(|r| {
+            r.insert(ahb1_rstr::GPIO_A_RESET | ahb1_rstr::GPIO_B_RESET | ahb1_rstr::GPIO_C_RESET |
+                     ahb1_rstr::GPIO_D_RESET |
+                     ahb1_rstr::GPIO_E_RESET | ahb1_rstr::GPIO_F_RESET |
+                     ahb1_rstr::GPIO_G_RESET |
+                     ahb1_rstr::GPIO_H_RESET |
+                     ahb1_rstr::GPIO_I_RESET |
+                     ahb1_rstr::GPIO_J_RESET | ahb1_rstr::GPIO_K_RESET)
+        });
+        // clear reset bits
+        self.ahb1_rstr.update(|r| {
+            r.remove(ahb1_rstr::GPIO_A_RESET | ahb1_rstr::GPIO_B_RESET | ahb1_rstr::GPIO_C_RESET |
+                     ahb1_rstr::GPIO_D_RESET |
+                     ahb1_rstr::GPIO_E_RESET | ahb1_rstr::GPIO_F_RESET |
+                     ahb1_rstr::GPIO_G_RESET |
+                     ahb1_rstr::GPIO_H_RESET |
+                     ahb1_rstr::GPIO_I_RESET |
+                     ahb1_rstr::GPIO_J_RESET | ahb1_rstr::GPIO_K_RESET)
+        });
+    }
+}
 
 impl VolatileStruct for RccBank {}
