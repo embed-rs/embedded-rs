@@ -1,6 +1,7 @@
 // see http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0646b/Bhccjgga.html
 
 use base::volatile::{Volatile, VolatileStruct};
+use components::rcc::RccBank;
 
 pub mod csr;
 pub mod rvr;
@@ -18,36 +19,34 @@ pub struct SysTickBank {
     calib: u32,
 }
 
+impl VolatileStruct for SysTickBank {}
+
 impl SysTickBank {
-    #[inline(always)]
-    pub fn enable(&mut self) {
-        self.csr |= csr::ENABLE;
-    }
-
-    #[inline(always)]
-    pub fn disable(&mut self) {
-        self.csr.update(|r| r.remove(csr::ENABLE));
-    }
-
-    #[inline(always)]
-    pub fn count(&self) -> u32 {
-        self.cvr.read().value()
-    }
-
-    #[inline(always)]
-    pub fn clear(&mut self) {
+    pub fn setup(&'static mut self, rcc: &RccBank, enable_interrupt: bool) -> SysTick {
+        // Progam SysTick
+        let pll_cfgr = rcc.pll_cfgr.read();
+        let pllm = pll_cfgr.pllm();
+        let plln = pll_cfgr.plln();
+        let pllp = pll_cfgr.pllp();
+        self.rvr.update(|r| r.set(25 * 1000 / pllm * plln / pllp - 1)); // hse runs at 25 MHz
         self.cvr.update(|r| r.clear());
-    }
 
-    #[inline(always)]
-    pub fn wait_ticks(&mut self, n: u32) {
-        self.disable();
-        self.rvr.update(|r| r.set(n));
-        self.clear();
-        self.enable();
+        let mut flags = self::csr::CLKSOURCE | self::csr::ENABLE;
+        if enable_interrupt {
+            flags |= self::csr::TICKINT;
+        }
+        self.csr.write(flags);
 
-        while !self.csr.read().contains(csr::COUNTFLAG) {}
+        SysTick(self)
     }
 }
 
-impl VolatileStruct for SysTickBank {}
+pub struct SysTick(&'static mut SysTickBank);
+
+impl SysTick {
+    pub fn busy_wait(&self, milliseconds: u32) {
+        for _ in 0..milliseconds {
+            while !self.0.csr.read().contains(csr::COUNTFLAG) {}
+        }
+    }
+}
