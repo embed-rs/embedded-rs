@@ -6,5 +6,6 @@ license = "MIT"
 description = "Work in progress embedded library; pre-release for single issue."
 
 [dependencies]
+rustc_builtins = { git = "https://github.com/japaric/rustc-builtins" }
 bit_field = "0.4.0"
 bitflags = "0.7.0"

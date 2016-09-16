@@ -7,6 +7,7 @@
 #![feature(unwind_attributes)]
 #![no_std]
 
+extern crate rustc_builtins;
 #[macro_use]
 extern crate bitflags;
 extern crate bit_field;
