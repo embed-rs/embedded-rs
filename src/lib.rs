@@ -45,14 +45,14 @@ macro_rules! board {
 
         #[link_section="vectors"]
         #[no_mangle]
-        pub static VECTORS: $crate::$board::VectorTable =
-        $crate::$board::VectorTable {
+        pub static VECTORS: $crate::boards::$board::VectorTable =
+        $crate::boards::$board::VectorTable {
             msp: &_STACK_TOP,
             reset: Some(_rust_start),
             $( $fname: $fval, )*
-            ..$crate::$board::VECTOR_TABLE
+            ..$crate::boards::$board::VECTOR_TABLE
         };
 
-        use $crate::$board::INITIAL_CPU_FREQ;
+        use $crate::boards::$board::INITIAL_CPU_FREQ;
     )
 }
