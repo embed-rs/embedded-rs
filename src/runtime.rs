@@ -1,7 +1,9 @@
 // provisional runtime
 // apparently, even with panic="abort" you need to have a panic_fmt
 // implementation
+#[cfg(feature = "panic-fmt")]
 use core::fmt;
+
 #[cfg(feature = "panic-fmt")]
 #[lang = "panic_fmt"]
 #[unwind]
