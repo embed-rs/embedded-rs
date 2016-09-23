@@ -29,10 +29,6 @@ extern "C" fn panic_impl(_: fmt::Arguments, _: &'static str, _: u32) -> ! {
     loop {}
 }
 
-#[lang = "start"]
-fn start(_: *const u8, _: isize, _: *const *const u8) -> isize {
-    -1
-}
 // end runtime
 
 pub type InterruptHandler = extern "C" fn() -> ();
