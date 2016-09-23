@@ -34,13 +34,15 @@ macro_rules! board {
      }
     )  =>
     (
+        use $crate::boards::$board::Hardware;
+
         #[allow(improper_ctypes)]
         extern {
             static _STACK_TOP: ();
         }
 
         extern "C" fn _rust_start() {
-            ::main()
+            ::main(unsafe { $crate::boards::$board::hw() })
         }
 
         #[link_section="vectors"]
