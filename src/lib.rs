@@ -63,7 +63,7 @@ macro_rules! board {
         #[no_mangle]
         pub static VECTORS: $crate::boards::$board::VectorTable =
         $crate::boards::$board::VectorTable {
-            msp: &_STACK_TOP,
+            msp: unsafe { &_STACK_TOP },
             reset: Some(_rust_start),
             $( $fname: $fval, )*
             ..$crate::boards::$board::VECTOR_TABLE
