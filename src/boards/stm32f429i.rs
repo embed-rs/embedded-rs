@@ -79,6 +79,7 @@ pub struct Hardware {
     pub gpio_i: &'static mut gpio::GpioBank<gpio::PortI>,
     pub gpio_j: &'static mut gpio::GpioBank<gpio::PortJ>,
     pub gpio_k: &'static mut gpio::GpioBank<gpio::PortK>,
+    pub rcc: &'static mut rcc::RccBank,
 }
 
 pub unsafe fn hw() -> Hardware {
@@ -94,5 +95,6 @@ pub unsafe fn hw() -> Hardware {
         gpio_i: gpio::GpioBank::from_addr(0x40022000),
         gpio_j: gpio::GpioBank::from_addr(0x40022400),
         gpio_k: gpio::GpioBank::from_addr(0x40022800),
+        rcc: rcc::RccBank::from_addr(0x40023800),
     }
 }
