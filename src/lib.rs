@@ -17,19 +17,7 @@ pub mod boards;
 pub mod components;
 pub mod irq;
 pub mod util;
-
-
-// runtime; should be moved to embedded-rs?
-// apparently, even with panic="abort" you need to have a panic_fmt
-// implementation
-use core::fmt;
-#[lang = "panic_fmt"]
-#[unwind]
-extern "C" fn panic_impl(_: fmt::Arguments, _: &'static str, _: u32) -> ! {
-    loop {}
-}
-
-// end runtime
+pub mod runtime;
 
 pub type InterruptHandler = extern "C" fn() -> ();
 
