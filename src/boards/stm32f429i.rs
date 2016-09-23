@@ -59,4 +59,5 @@ pub const VECTOR_TABLE: VectorTable = VectorTable {
     interrupt9: None,
 };
 
+#[allow(unused)]
 pub const INITIAL_CPU_FREQ: usize = 8_000_000;
