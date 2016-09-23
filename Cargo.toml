@@ -11,5 +11,6 @@ bit_field = "0.4.0"
 bitflags = "0.7.0"
 
 [features]
-default = ["panic-fmt"]
+default = ["panic-fmt", "unwind-cpp"]
 panic-fmt = []
+unwind-cpp = []

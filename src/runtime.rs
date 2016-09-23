@@ -9,7 +9,7 @@ extern "C" fn panic_impl(_: fmt::Arguments, _: &'static str, _: u32) -> ! {
     loop {}
 }
 
-// apparently, we need this even though we use panic="abort"?
+#[cfg(feature = "unwind-cpp")]
 #[no_mangle]
 pub extern "C" fn __aeabi_unwind_cpp_pr0() {}
 
