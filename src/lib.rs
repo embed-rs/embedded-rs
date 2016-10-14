@@ -12,6 +12,7 @@ extern crate compiler_builtins;
 #[macro_use]
 extern crate bitflags;
 extern crate bit_field;
+extern crate svd_board;
 
 pub mod base;
 pub mod boards;
@@ -19,6 +20,10 @@ pub mod components;
 pub mod irq;
 pub mod util;
 pub mod runtime;
+pub use hardware::{Hardware, hw};
+
+mod hardware;
+
 
 pub type InterruptHandler = extern "C" fn() -> ();
 

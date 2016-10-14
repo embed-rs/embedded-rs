@@ -9,8 +9,10 @@ description = "Work in progress embedded library; pre-release for single issue."
 compiler_builtins = { git = "https://github.com/japaric/compiler-builtins" }
 bit_field = "0.4.0"
 bitflags = "0.7.0"
+svd_board = {git = "https://github.com/phil-opp/svd-board.git"}
 
 [features]
 default = ["panic-fmt", "unwind-cpp"]
 panic-fmt = []
 unwind-cpp = []
+stm32f7 = ["svd_board/stm32f7"]
