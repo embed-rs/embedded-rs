@@ -5,9 +5,10 @@
 #![feature(asm)]
 #![feature(lang_items)]
 #![feature(unwind_attributes)]
+#![feature(compiler_builtins_lib)]
 #![no_std]
 
-extern crate rustc_builtins;
+extern crate compiler_builtins;
 #[macro_use]
 extern crate bitflags;
 extern crate bit_field;
