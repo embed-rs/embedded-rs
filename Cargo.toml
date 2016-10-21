@@ -1,18 +1,23 @@
 [package]
 authors = ["Marc Brinkmann <git@marcbrinkmann.de>", "Philipp Oppermann <dev@phil-opp.com>"]
+description = "Work in progress embedded library; pre-release for single issue."
+license = "MIT"
 name = "embedded"
 version = "0.2.0"
-license = "MIT"
-description = "Work in progress embedded library; pre-release for single issue."
 
 [dependencies]
-compiler_builtins = { git = "https://github.com/japaric/compiler-builtins" }
 bit_field = "0.4.0"
 bitflags = "0.7.0"
-svd_board = {git = "https://github.com/phil-opp/svd-board.git"}
+volatile = "0.1.0"
+
+[dependencies.compiler_builtins]
+git = "https://github.com/japaric/compiler-builtins"
+
+[dependencies.svd_board]
+git = "https://github.com/phil-opp/svd-board.git"
 
 [features]
-default = ["panic-fmt", "unwind-cpp"]
+default = ["panic-fmt", "unwind-cpp", "stm32f7"]
 panic-fmt = []
-unwind-cpp = []
 stm32f7 = ["svd_board/stm32f7"]
+unwind-cpp = []

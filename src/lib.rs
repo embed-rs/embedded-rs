@@ -13,6 +13,7 @@ extern crate compiler_builtins;
 extern crate bitflags;
 extern crate bit_field;
 extern crate svd_board;
+extern crate volatile;
 
 pub mod base;
 pub mod boards;
