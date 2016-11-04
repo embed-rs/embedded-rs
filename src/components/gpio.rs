@@ -1,50 +1,31 @@
-use svd_board::gpioa::Gpioa;
-use svd_board::gpiob::Gpiob;
 use svd_board::gpiod::{self, Gpiod};
 use core::marker::PhantomData;
-use core::mem;
+use volatile::{ReadOnly, WriteOnly, ReadWrite};
 
 pub struct Gpio<N: GpioPortNumber> {
-    registers: Gpiod,
+    registers: &'static mut Gpiod,
     phantom: PhantomData<N>,
 }
 
-impl From<Gpioa> for Gpio<PortA> {
-    fn from(registers: Gpioa) -> Self {
-        Gpio::new(unsafe { mem::transmute(registers) })
-    }
-}
-
-impl From<Gpiob> for Gpio<PortB> {
-    fn from(registers: Gpiob) -> Self {
-        Gpio::new(unsafe { mem::transmute(registers) })
-    }
-}
-
-impl From<Gpiod> for Gpio<PortD> {
-    fn from(registers: Gpiod) -> Self {
-        Gpio::new(registers)
-    }
-}
-
 impl<N: GpioPortNumber> Gpio<N> {
-    pub fn new(registers: Gpiod) -> Gpio<N> {
+    /// Safety: It's unsafe to create two Gpios with the same port number.
+    pub unsafe fn new(registers: &'static mut Gpiod) -> Gpio<N> {
         Gpio {
             registers: registers,
             phantom: PhantomData,
         }
     }
 
-    pub fn split(&'static mut self) -> (GpioPort<N>, GpioPins<N>) {
-        let Gpiod { ref mut moder,
-                    ref mut otyper,
-                    ref mut ospeedr,
-                    ref mut pupdr,
-                    ref idr,
-                    ref mut bsrr,
-                    ref mut afrl,
-                    ref mut afrh,
-                    .. } = self.registers;
+    pub fn split(self) -> (GpioPort<N>, GpioPins<N>) {
+        let &mut Gpiod { ref mut moder,
+                         ref mut otyper,
+                         ref mut ospeedr,
+                         ref mut pupdr,
+                         ref idr,
+                         ref mut bsrr,
+                         ref mut afrl,
+                         ref mut afrh,
+                         .. } = self.registers;
 
         let bank_ref = GpioPort {
             mode: moder,
@@ -82,13 +63,13 @@ impl<N: GpioPortNumber> Gpio<N> {
 }
 
 pub struct GpioPort<N: GpioPortNumber> {
-    mode: &'static mut gpiod::Moder,
-    out_type: &'static mut gpiod::Otyper,
-    out_speed: &'static mut gpiod::Ospeedr,
-    pupd: &'static mut gpiod::Pupdr,
-    afrl: &'static mut gpiod::Afrl,
-    afrh: &'static mut gpiod::Afrh,
-    idr: &'static gpiod::Idr,
+    mode: &'static mut ReadWrite<gpiod::Moder>,
+    out_type: &'static mut ReadWrite<gpiod::Otyper>,
+    out_speed: &'static mut ReadWrite<gpiod::Ospeedr>,
+    pupd: &'static mut ReadWrite<gpiod::Pupdr>,
+    afrl: &'static mut ReadWrite<gpiod::Afrl>,
+    afrh: &'static mut ReadWrite<gpiod::Afrh>,
+    idr: &'static ReadOnly<gpiod::Idr>,
     bsrr: BsrrRef,
     phantom: PhantomData<N>,
 }
@@ -138,125 +119,137 @@ impl<N: GpioPortNumber> GpioPort<N> {
 
     fn set_mode(&mut self, pin: &mut GpioPin<N>, mode: Mode) {
         let set_mode = match pin.pin_number {
-            PinNumber::Pin0 => gpiod::ModerW::moder0,
-            PinNumber::Pin1 => gpiod::ModerW::moder1,
-            PinNumber::Pin2 => gpiod::ModerW::moder2,
-            PinNumber::Pin3 => gpiod::ModerW::moder3,
-            PinNumber::Pin4 => gpiod::ModerW::moder4,
-            PinNumber::Pin5 => gpiod::ModerW::moder5,
-            PinNumber::Pin6 => gpiod::ModerW::moder6,
-            PinNumber::Pin7 => gpiod::ModerW::moder7,
-            PinNumber::Pin8 => gpiod::ModerW::moder8,
-            PinNumber::Pin9 => gpiod::ModerW::moder9,
-            PinNumber::Pin10 => gpiod::ModerW::moder10,
-            PinNumber::Pin11 => gpiod::ModerW::moder11,
-            PinNumber::Pin12 => gpiod::ModerW::moder12,
-            PinNumber::Pin13 => gpiod::ModerW::moder13,
-            PinNumber::Pin14 => gpiod::ModerW::moder14,
-            PinNumber::Pin15 => gpiod::ModerW::moder15,
+            PinNumber::Pin0 => gpiod::Moder::set_moder0,
+            PinNumber::Pin1 => gpiod::Moder::set_moder1,
+            PinNumber::Pin2 => gpiod::Moder::set_moder2,
+            PinNumber::Pin3 => gpiod::Moder::set_moder3,
+            PinNumber::Pin4 => gpiod::Moder::set_moder4,
+            PinNumber::Pin5 => gpiod::Moder::set_moder5,
+            PinNumber::Pin6 => gpiod::Moder::set_moder6,
+            PinNumber::Pin7 => gpiod::Moder::set_moder7,
+            PinNumber::Pin8 => gpiod::Moder::set_moder8,
+            PinNumber::Pin9 => gpiod::Moder::set_moder9,
+            PinNumber::Pin10 => gpiod::Moder::set_moder10,
+            PinNumber::Pin11 => gpiod::Moder::set_moder11,
+            PinNumber::Pin12 => gpiod::Moder::set_moder12,
+            PinNumber::Pin13 => gpiod::Moder::set_moder13,
+            PinNumber::Pin14 => gpiod::Moder::set_moder14,
+            PinNumber::Pin15 => gpiod::Moder::set_moder15,
         };
-        self.mode.write(|r| set_mode(r, mode as u8));
+        self.mode.update(|r| {
+            set_mode(r, mode as u8);
+        });
     }
 
     fn set_resistor(&mut self, pin: &mut GpioPin<N>, resistor: Resistor) {
         let set_pupd = match pin.pin_number {
-            PinNumber::Pin0 => gpiod::PupdrW::pupdr0,
-            PinNumber::Pin1 => gpiod::PupdrW::pupdr1,
-            PinNumber::Pin2 => gpiod::PupdrW::pupdr2,
-            PinNumber::Pin3 => gpiod::PupdrW::pupdr3,
-            PinNumber::Pin4 => gpiod::PupdrW::pupdr4,
-            PinNumber::Pin5 => gpiod::PupdrW::pupdr5,
-            PinNumber::Pin6 => gpiod::PupdrW::pupdr6,
-            PinNumber::Pin7 => gpiod::PupdrW::pupdr7,
-            PinNumber::Pin8 => gpiod::PupdrW::pupdr8,
-            PinNumber::Pin9 => gpiod::PupdrW::pupdr9,
-            PinNumber::Pin10 => gpiod::PupdrW::pupdr10,
-            PinNumber::Pin11 => gpiod::PupdrW::pupdr11,
-            PinNumber::Pin12 => gpiod::PupdrW::pupdr12,
-            PinNumber::Pin13 => gpiod::PupdrW::pupdr13,
-            PinNumber::Pin14 => gpiod::PupdrW::pupdr14,
-            PinNumber::Pin15 => gpiod::PupdrW::pupdr15,
+            PinNumber::Pin0 => gpiod::Pupdr::set_pupdr0,
+            PinNumber::Pin1 => gpiod::Pupdr::set_pupdr1,
+            PinNumber::Pin2 => gpiod::Pupdr::set_pupdr2,
+            PinNumber::Pin3 => gpiod::Pupdr::set_pupdr3,
+            PinNumber::Pin4 => gpiod::Pupdr::set_pupdr4,
+            PinNumber::Pin5 => gpiod::Pupdr::set_pupdr5,
+            PinNumber::Pin6 => gpiod::Pupdr::set_pupdr6,
+            PinNumber::Pin7 => gpiod::Pupdr::set_pupdr7,
+            PinNumber::Pin8 => gpiod::Pupdr::set_pupdr8,
+            PinNumber::Pin9 => gpiod::Pupdr::set_pupdr9,
+            PinNumber::Pin10 => gpiod::Pupdr::set_pupdr10,
+            PinNumber::Pin11 => gpiod::Pupdr::set_pupdr11,
+            PinNumber::Pin12 => gpiod::Pupdr::set_pupdr12,
+            PinNumber::Pin13 => gpiod::Pupdr::set_pupdr13,
+            PinNumber::Pin14 => gpiod::Pupdr::set_pupdr14,
+            PinNumber::Pin15 => gpiod::Pupdr::set_pupdr15,
         };
-        self.pupd.write(|r| set_pupd(r, resistor as u8));
+        self.pupd.update(|r| {
+            set_pupd(r, resistor as u8);
+        });
     }
 
     fn set_out_type(&mut self, pin: &mut GpioPin<N>, out_type: Type) {
         let set_type = match pin.pin_number {
-            PinNumber::Pin0 => gpiod::OtyperW::ot0,
-            PinNumber::Pin1 => gpiod::OtyperW::ot1,
-            PinNumber::Pin2 => gpiod::OtyperW::ot2,
-            PinNumber::Pin3 => gpiod::OtyperW::ot3,
-            PinNumber::Pin4 => gpiod::OtyperW::ot4,
-            PinNumber::Pin5 => gpiod::OtyperW::ot5,
-            PinNumber::Pin6 => gpiod::OtyperW::ot6,
-            PinNumber::Pin7 => gpiod::OtyperW::ot7,
-            PinNumber::Pin8 => gpiod::OtyperW::ot8,
-            PinNumber::Pin9 => gpiod::OtyperW::ot9,
-            PinNumber::Pin10 => gpiod::OtyperW::ot10,
-            PinNumber::Pin11 => gpiod::OtyperW::ot11,
-            PinNumber::Pin12 => gpiod::OtyperW::ot12,
-            PinNumber::Pin13 => gpiod::OtyperW::ot13,
-            PinNumber::Pin14 => gpiod::OtyperW::ot14,
-            PinNumber::Pin15 => gpiod::OtyperW::ot15,
+            PinNumber::Pin0 => gpiod::Otyper::set_ot0,
+            PinNumber::Pin1 => gpiod::Otyper::set_ot1,
+            PinNumber::Pin2 => gpiod::Otyper::set_ot2,
+            PinNumber::Pin3 => gpiod::Otyper::set_ot3,
+            PinNumber::Pin4 => gpiod::Otyper::set_ot4,
+            PinNumber::Pin5 => gpiod::Otyper::set_ot5,
+            PinNumber::Pin6 => gpiod::Otyper::set_ot6,
+            PinNumber::Pin7 => gpiod::Otyper::set_ot7,
+            PinNumber::Pin8 => gpiod::Otyper::set_ot8,
+            PinNumber::Pin9 => gpiod::Otyper::set_ot9,
+            PinNumber::Pin10 => gpiod::Otyper::set_ot10,
+            PinNumber::Pin11 => gpiod::Otyper::set_ot11,
+            PinNumber::Pin12 => gpiod::Otyper::set_ot12,
+            PinNumber::Pin13 => gpiod::Otyper::set_ot13,
+            PinNumber::Pin14 => gpiod::Otyper::set_ot14,
+            PinNumber::Pin15 => gpiod::Otyper::set_ot15,
         };
         let value = match out_type {
             Type::PushPull => false,
             Type::OpenDrain => true,
         };
-        self.out_type.write(|r| set_type(r, value));
+        self.out_type.update(|r| {
+            set_type(r, value);
+        });
     }
 
     fn set_out_speed(&mut self, pin: &mut GpioPin<N>, out_speed: Speed) {
         let set_speed = match pin.pin_number {
-            PinNumber::Pin0 => gpiod::OspeedrW::ospeedr0,
-            PinNumber::Pin1 => gpiod::OspeedrW::ospeedr1,
-            PinNumber::Pin2 => gpiod::OspeedrW::ospeedr2,
-            PinNumber::Pin3 => gpiod::OspeedrW::ospeedr3,
-            PinNumber::Pin4 => gpiod::OspeedrW::ospeedr4,
-            PinNumber::Pin5 => gpiod::OspeedrW::ospeedr5,
-            PinNumber::Pin6 => gpiod::OspeedrW::ospeedr6,
-            PinNumber::Pin7 => gpiod::OspeedrW::ospeedr7,
-            PinNumber::Pin8 => gpiod::OspeedrW::ospeedr8,
-            PinNumber::Pin9 => gpiod::OspeedrW::ospeedr9,
-            PinNumber::Pin10 => gpiod::OspeedrW::ospeedr10,
-            PinNumber::Pin11 => gpiod::OspeedrW::ospeedr11,
-            PinNumber::Pin12 => gpiod::OspeedrW::ospeedr12,
-            PinNumber::Pin13 => gpiod::OspeedrW::ospeedr13,
-            PinNumber::Pin14 => gpiod::OspeedrW::ospeedr14,
-            PinNumber::Pin15 => gpiod::OspeedrW::ospeedr15,
+            PinNumber::Pin0 => gpiod::Ospeedr::set_ospeedr0,
+            PinNumber::Pin1 => gpiod::Ospeedr::set_ospeedr1,
+            PinNumber::Pin2 => gpiod::Ospeedr::set_ospeedr2,
+            PinNumber::Pin3 => gpiod::Ospeedr::set_ospeedr3,
+            PinNumber::Pin4 => gpiod::Ospeedr::set_ospeedr4,
+            PinNumber::Pin5 => gpiod::Ospeedr::set_ospeedr5,
+            PinNumber::Pin6 => gpiod::Ospeedr::set_ospeedr6,
+            PinNumber::Pin7 => gpiod::Ospeedr::set_ospeedr7,
+            PinNumber::Pin8 => gpiod::Ospeedr::set_ospeedr8,
+            PinNumber::Pin9 => gpiod::Ospeedr::set_ospeedr9,
+            PinNumber::Pin10 => gpiod::Ospeedr::set_ospeedr10,
+            PinNumber::Pin11 => gpiod::Ospeedr::set_ospeedr11,
+            PinNumber::Pin12 => gpiod::Ospeedr::set_ospeedr12,
+            PinNumber::Pin13 => gpiod::Ospeedr::set_ospeedr13,
+            PinNumber::Pin14 => gpiod::Ospeedr::set_ospeedr14,
+            PinNumber::Pin15 => gpiod::Ospeedr::set_ospeedr15,
         };
-        self.out_speed.write(|r| set_speed(r, out_speed as u8));
+        self.out_speed.update(|r| {
+            set_speed(r, out_speed as u8);
+        });
     }
 
     fn set_alternate_function(&mut self, pin: &mut GpioPin<N>, alternate_fn: AlternateFunction) {
         match pin.pin_number as u8 {
             0...7 => {
                 let set_alternate_fn = match pin.pin_number {
-                    PinNumber::Pin0 => gpiod::AfrlW::afrl0,
-                    PinNumber::Pin1 => gpiod::AfrlW::afrl1,
-                    PinNumber::Pin2 => gpiod::AfrlW::afrl2,
-                    PinNumber::Pin3 => gpiod::AfrlW::afrl3,
-                    PinNumber::Pin4 => gpiod::AfrlW::afrl4,
-                    PinNumber::Pin5 => gpiod::AfrlW::afrl5,
-                    PinNumber::Pin6 => gpiod::AfrlW::afrl6,
-                    PinNumber::Pin7 => gpiod::AfrlW::afrl7,
+                    PinNumber::Pin0 => gpiod::Afrl::set_afrl0,
+                    PinNumber::Pin1 => gpiod::Afrl::set_afrl1,
+                    PinNumber::Pin2 => gpiod::Afrl::set_afrl2,
+                    PinNumber::Pin3 => gpiod::Afrl::set_afrl3,
+                    PinNumber::Pin4 => gpiod::Afrl::set_afrl4,
+                    PinNumber::Pin5 => gpiod::Afrl::set_afrl5,
+                    PinNumber::Pin6 => gpiod::Afrl::set_afrl6,
+                    PinNumber::Pin7 => gpiod::Afrl::set_afrl7,
                     _ => unreachable!(),
                 };
-                self.afrl.write(|r| set_alternate_fn(r, alternate_fn as u8));
+                self.afrl.update(|r| {
+                    set_alternate_fn(r, alternate_fn as u8);
+                });
             }
             8...15 => {
                 let set_alternate_fn = match pin.pin_number {
-                    PinNumber::Pin8 => gpiod::AfrhW::afrh8,
-                    PinNumber::Pin9 => gpiod::AfrhW::afrh9,
-                    PinNumber::Pin10 => gpiod::AfrhW::afrh10,
-                    PinNumber::Pin11 => gpiod::AfrhW::afrh11,
-                    PinNumber::Pin12 => gpiod::AfrhW::afrh12,
-                    PinNumber::Pin13 => gpiod::AfrhW::afrh13,
-                    PinNumber::Pin14 => gpiod::AfrhW::afrh14,
-                    PinNumber::Pin15 => gpiod::AfrhW::afrh15,
+                    PinNumber::Pin8 => gpiod::Afrh::set_afrh8,
+                    PinNumber::Pin9 => gpiod::Afrh::set_afrh9,
+                    PinNumber::Pin10 => gpiod::Afrh::set_afrh10,
+                    PinNumber::Pin11 => gpiod::Afrh::set_afrh11,
+                    PinNumber::Pin12 => gpiod::Afrh::set_afrh12,
+                    PinNumber::Pin13 => gpiod::Afrh::set_afrh13,
+                    PinNumber::Pin14 => gpiod::Afrh::set_afrh14,
+                    PinNumber::Pin15 => gpiod::Afrh::set_afrh15,
                     _ => unreachable!(),
                 };
-                self.afrh.write(|r| set_alternate_fn(r, alternate_fn as u8));
+                self.afrh.update(|r| {
+                    set_alternate_fn(r, alternate_fn as u8);
+                });
             }
             _ => unreachable!(),
         }
@@ -299,7 +292,7 @@ impl<N> GpioPin<N>
 }
 
 pub struct GpioRead {
-    idr: &'static gpiod::Idr,
+    idr: &'static ReadOnly<gpiod::Idr>,
     pin: PinNumber,
 }
 
@@ -440,54 +433,57 @@ enum Mode {
 }
 
 #[derive(Debug, Clone)]
-struct BsrrRef(*mut gpiod::Bsrr);
+struct BsrrRef(*mut WriteOnly<gpiod::Bsrr>);
 
 impl BsrrRef {
     fn set(&self, pin_number: PinNumber, value: bool) {
         let f = match value {
             true => {
                 match pin_number {
-                    PinNumber::Pin0 => gpiod::BsrrW::bs0,
-                    PinNumber::Pin1 => gpiod::BsrrW::bs1,
-                    PinNumber::Pin2 => gpiod::BsrrW::bs2,
-                    PinNumber::Pin3 => gpiod::BsrrW::bs3,
-                    PinNumber::Pin4 => gpiod::BsrrW::bs4,
-                    PinNumber::Pin5 => gpiod::BsrrW::bs5,
-                    PinNumber::Pin6 => gpiod::BsrrW::bs6,
-                    PinNumber::Pin7 => gpiod::BsrrW::bs7,
-                    PinNumber::Pin8 => gpiod::BsrrW::bs8,
-                    PinNumber::Pin9 => gpiod::BsrrW::bs9,
-                    PinNumber::Pin10 => gpiod::BsrrW::bs10,
-                    PinNumber::Pin11 => gpiod::BsrrW::bs11,
-                    PinNumber::Pin12 => gpiod::BsrrW::bs12,
-                    PinNumber::Pin13 => gpiod::BsrrW::bs13,
-                    PinNumber::Pin14 => gpiod::BsrrW::bs14,
-                    PinNumber::Pin15 => gpiod::BsrrW::bs15,
+                    PinNumber::Pin0 => gpiod::Bsrr::set_bs0,
+                    PinNumber::Pin1 => gpiod::Bsrr::set_bs1,
+                    PinNumber::Pin2 => gpiod::Bsrr::set_bs2,
+                    PinNumber::Pin3 => gpiod::Bsrr::set_bs3,
+                    PinNumber::Pin4 => gpiod::Bsrr::set_bs4,
+                    PinNumber::Pin5 => gpiod::Bsrr::set_bs5,
+                    PinNumber::Pin6 => gpiod::Bsrr::set_bs6,
+                    PinNumber::Pin7 => gpiod::Bsrr::set_bs7,
+                    PinNumber::Pin8 => gpiod::Bsrr::set_bs8,
+                    PinNumber::Pin9 => gpiod::Bsrr::set_bs9,
+                    PinNumber::Pin10 => gpiod::Bsrr::set_bs10,
+                    PinNumber::Pin11 => gpiod::Bsrr::set_bs11,
+                    PinNumber::Pin12 => gpiod::Bsrr::set_bs12,
+                    PinNumber::Pin13 => gpiod::Bsrr::set_bs13,
+                    PinNumber::Pin14 => gpiod::Bsrr::set_bs14,
+                    PinNumber::Pin15 => gpiod::Bsrr::set_bs15,
                 }
             }
             false => {
                 match pin_number {
-                    PinNumber::Pin0 => gpiod::BsrrW::br0,
-                    PinNumber::Pin1 => gpiod::BsrrW::br1,
-                    PinNumber::Pin2 => gpiod::BsrrW::br2,
-                    PinNumber::Pin3 => gpiod::BsrrW::br3,
-                    PinNumber::Pin4 => gpiod::BsrrW::br4,
-                    PinNumber::Pin5 => gpiod::BsrrW::br5,
-                    PinNumber::Pin6 => gpiod::BsrrW::br6,
-                    PinNumber::Pin7 => gpiod::BsrrW::br7,
-                    PinNumber::Pin8 => gpiod::BsrrW::br8,
-                    PinNumber::Pin9 => gpiod::BsrrW::br9,
-                    PinNumber::Pin10 => gpiod::BsrrW::br10,
-                    PinNumber::Pin11 => gpiod::BsrrW::br11,
-                    PinNumber::Pin12 => gpiod::BsrrW::br12,
-                    PinNumber::Pin13 => gpiod::BsrrW::br13,
-                    PinNumber::Pin14 => gpiod::BsrrW::br14,
-                    PinNumber::Pin15 => gpiod::BsrrW::br15,
+                    PinNumber::Pin0 => gpiod::Bsrr::set_br0,
+                    PinNumber::Pin1 => gpiod::Bsrr::set_br1,
+                    PinNumber::Pin2 => gpiod::Bsrr::set_br2,
+                    PinNumber::Pin3 => gpiod::Bsrr::set_br3,
+                    PinNumber::Pin4 => gpiod::Bsrr::set_br4,
+                    PinNumber::Pin5 => gpiod::Bsrr::set_br5,
+                    PinNumber::Pin6 => gpiod::Bsrr::set_br6,
+                    PinNumber::Pin7 => gpiod::Bsrr::set_br7,
+                    PinNumber::Pin8 => gpiod::Bsrr::set_br8,
+                    PinNumber::Pin9 => gpiod::Bsrr::set_br9,
+                    PinNumber::Pin10 => gpiod::Bsrr::set_br10,
+                    PinNumber::Pin11 => gpiod::Bsrr::set_br11,
+                    PinNumber::Pin12 => gpiod::Bsrr::set_br12,
+                    PinNumber::Pin13 => gpiod::Bsrr::set_br13,
+                    PinNumber::Pin14 => gpiod::Bsrr::set_br14,
+                    PinNumber::Pin15 => gpiod::Bsrr::set_br15,
                 }
             }
         };
+        let mut new_value = gpiod::Bsrr::reset_value();
+        f(&mut new_value, true);
+
         let bsrr = unsafe { &mut *self.0 };
-        bsrr.write(|r| f(r, true));
+        bsrr.write(new_value);
     }
 }
 
