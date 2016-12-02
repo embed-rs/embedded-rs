@@ -37,7 +37,7 @@ pub struct Gpio {
     pub alternate_fn: ReadWrite<alternate_fn::AlternateFunctionRegister>,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Pin {
     Pin0 = 0,
