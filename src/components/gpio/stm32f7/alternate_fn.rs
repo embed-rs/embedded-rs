@@ -1,21 +1,21 @@
 //! GPIO alternate function register (GPIOx_AFRL and GPIOx_AFRH)
 
-use super::PinNumber;
+use super::Pin;
 use bit_field::BitField;
 
 /// Register
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct Register {
+pub struct AlternateFunctionRegister {
     low: Low,
     high: High,
 }
 
-impl Register {
+impl AlternateFunctionRegister {
     /// Sets `pin`
-    pub fn set(&mut self, pins: &[PinNumber], alternate_fn: AlternateFunction) {
-        self.low.set(pins, alternate_fn);
-        self.high.set(pins, alternate_fn);
+    pub fn set(&mut self, pin: Pin, alternate_fn: AlternateFunction) {
+        self.low.set(pin, alternate_fn);
+        self.high.set(pin, alternate_fn);
     }
 }
 
@@ -47,9 +47,10 @@ struct High(BitField<u32>);
 
 impl High {
     /// Sets the alternate function for the given high pins
-    pub fn set(&mut self, pins: &[PinNumber], alternate_fn: AlternateFunction) {
-        for pin in pins.iter().map(|p| *p as u8).filter(|p| *p >= 8) {
-            let offset = (pin - 8) * 4;
+    pub fn set(&mut self, pin: Pin, alternate_fn: AlternateFunction) {
+        let pin_number = pin as u8;
+        if pin_number >= 8 {
+            let offset = (pin_number - 8) * 4;
             self.0.set_range(offset..(offset + 4), alternate_fn as u32);
         }
     }
@@ -57,13 +58,14 @@ impl High {
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct Low(BitField<u32>);
+struct Low(BitField<u32>);
 
 impl Low {
     /// Sets the alternate function for the given low pins
-    pub fn set(&mut self, pins: &[PinNumber], alternate_fn: AlternateFunction) {
-        for pin in pins.iter().map(|p| *p as u8).filter(|p| *p < 8) {
-            let offset = pin * 4;
+    pub fn set(&mut self, pin: Pin, alternate_fn: AlternateFunction) {
+        let pin_number = pin as u8;
+        if pin_number < 8 {
+            let offset = pin_number * 4;
             self.0.set_range(offset..(offset + 4), alternate_fn as u32);
         }
     }

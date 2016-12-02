@@ -1,19 +1,17 @@
 //! GPIO port pull-up/pull-down register (GPIOx_PUPDR)
 
-use super::PinNumber;
+use super::Pin;
 use bit_field::BitField;
 
 /// Register
 #[derive(Clone, Copy)]
-pub struct Register(BitField<u32>);
+pub struct ResistorRegister(BitField<u32>);
 
-impl Register {
+impl ResistorRegister {
     /// Sets the resistor for the given pins
-    pub fn set(&mut self, pins: &[PinNumber], resistor: Resistor) {
-        for pin in pins {
-            let offset = (*pin as u8) * 2;
-            self.0.set_range(offset..offset + 2, resistor as u32);
-        }
+    pub fn set(&mut self, pin: Pin, resistor: Resistor) {
+        let offset = (pin as u8) * 2;
+        self.0.set_range(offset..offset + 2, resistor as u32);
     }
 }
 
