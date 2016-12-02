@@ -12,6 +12,7 @@ extern crate compiler_builtins;
 #[macro_use]
 extern crate bitflags;
 extern crate bit_field;
+extern crate volatile;
 
 pub mod base;
 pub mod components;
