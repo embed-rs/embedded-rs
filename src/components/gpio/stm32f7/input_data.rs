@@ -1,15 +1,15 @@
 //! GPIO port input data register (GPIOx_IDR)
 
-use super::PinNumber;
+use super::Pin;
 use bit_field::BitField;
 
 /// Register
 #[derive(Clone, Copy)]
-pub struct Register(BitField<u32>);
+pub struct InputDataRegister(BitField<u32>);
 
-impl Register {
+impl InputDataRegister {
     /// Get input pin
-    pub fn get(&self, pin: PinNumber) -> bool {
+    pub fn get(&self, pin: Pin) -> bool {
         self.0.get_bit(pin as u8)
     }
 }
