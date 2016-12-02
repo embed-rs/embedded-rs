@@ -13,8 +13,10 @@ extern crate compiler_builtins;
 extern crate bitflags;
 extern crate bit_field;
 extern crate volatile;
+extern crate arrayvec;
 
 pub mod components;
+pub mod interfaces;
 pub mod irq;
 pub mod util;
 pub mod runtime;
