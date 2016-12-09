@@ -1,6 +1,6 @@
 //! FLASH registers
 
-use base::volatile::{Volatile, VolatileStruct};
+use volatile::Volatile;
 
 pub mod acr;
 
@@ -16,5 +16,3 @@ pub struct FlashBank {
     opt_cr: u32,
     opt_cr1: u32,
 }
-
-impl VolatileStruct for FlashBank {}

@@ -1,6 +1,6 @@
 //! Power controller (PWR)
 
-use base::volatile::{Volatile, VolatileStruct};
+use volatile::Volatile;
 
 pub mod cr1;
 pub mod csr1;
@@ -12,5 +12,3 @@ pub struct PwrBank {
     cr2: u32,
     csr2: u32,
 }
-
-impl VolatileStruct for PwrBank {}

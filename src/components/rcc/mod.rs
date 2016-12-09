@@ -1,4 +1,4 @@
-use ::base::volatile::{Volatile, VolatileStruct};
+use volatile::Volatile;
 
 pub mod cr;
 pub mod pll_cfgr;
@@ -108,5 +108,3 @@ impl RccBank {
         });
     }
 }
-
-impl VolatileStruct for RccBank {}
