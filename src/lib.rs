@@ -14,7 +14,6 @@ extern crate bitflags;
 extern crate bit_field;
 extern crate volatile;
 
-pub mod base;
 pub mod components;
 pub mod irq;
 pub mod util;

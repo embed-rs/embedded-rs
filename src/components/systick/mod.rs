@@ -1,7 +1,7 @@
 // see http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0646b/Bhccjgga.html
 
-use base::volatile::{Volatile, VolatileStruct};
 use components::rcc::RccBank;
+use volatile::Volatile;
 
 pub mod csr;
 pub mod rvr;
@@ -18,8 +18,6 @@ pub struct SysTickBank {
     /// Calibration Register
     calib: u32,
 }
-
-impl VolatileStruct for SysTickBank {}
 
 impl SysTickBank {
     pub fn setup(&'static mut self, rcc: &RccBank, enable_interrupt: bool) -> SysTick {
