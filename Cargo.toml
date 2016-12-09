@@ -1,12 +1,11 @@
 [package]
 authors = ["Marc Brinkmann <git@marcbrinkmann.de>", "Philipp Oppermann <dev@phil-opp.com>"]
+description = "Work in progress embedded library; pre-release for single issue."
+license = "MIT"
 name = "embedded"
 version = "0.2.0"
-license = "MIT"
-description = "Work in progress embedded library; pre-release for single issue."
 
 [dependencies]
-compiler_builtins = { git = "https://github.com/japaric/compiler-builtins" }
 bit_field = "0.4.0"
 bitflags = "0.7.0"
 volatile = "0.2.0"
@@ -14,6 +13,9 @@ volatile = "0.2.0"
 [dependencies.arrayvec]
 version = "0.3.20"
 default-features = false
+
+[dependencies.compiler_builtins]
+git = "https://github.com/japaric/compiler-builtins"
 
 [features]
 default = ["panic-fmt", "unwind-cpp"]
