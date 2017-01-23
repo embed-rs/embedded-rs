@@ -5,7 +5,6 @@
 #![feature(asm)]
 #![feature(lang_items)]
 #![feature(unwind_attributes)]
-#![feature(compiler_builtins_lib)]
 #![no_std]
 
 extern crate compiler_builtins_snapshot;
