@@ -8,14 +8,12 @@ version = "0.3.0"
 [dependencies]
 bit_field = "0.4.0"
 bitflags = "0.7.0"
+compiler-builtins-snapshot = "0.0.20161008+c56faf22abb39724008148d58f12bcd43b6d236b"
 volatile = "0.2.0"
 
 [dependencies.arrayvec]
 version = "0.3.20"
 default-features = false
-
-[dependencies.compiler_builtins]
-git = "https://github.com/japaric/compiler-builtins"
 
 [features]
 default = ["panic-fmt", "unwind-cpp"]

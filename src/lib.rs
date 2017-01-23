@@ -8,7 +8,7 @@
 #![feature(compiler_builtins_lib)]
 #![no_std]
 
-extern crate compiler_builtins;
+extern crate compiler_builtins_snapshot;
 #[macro_use]
 extern crate bitflags;
 extern crate bit_field;
