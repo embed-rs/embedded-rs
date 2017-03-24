@@ -1,7 +1,7 @@
 [package]
 authors = ["Marc Brinkmann <git@marcbrinkmann.de>", "Philipp Oppermann <dev@phil-opp.com>"]
 description = "Work in progress embedded library; pre-release for single issue."
-license = "MIT"
+license = "MIT/Apache-2.0"
 name = "embedded"
 version = "0.3.0"
 
