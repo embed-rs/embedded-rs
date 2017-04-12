@@ -14,10 +14,6 @@ volatile = "0.2.0"
 version = "0.3.20"
 default-features = false
 
-[dependencies.compiler-builtins-snapshot]
-version = "0.0.20161008+c56faf22abb39724008148d58f12bcd43b6d236b"
-features = ["memcpy"]
-
 [features]
 default = ["panic-fmt", "unwind-cpp"]
 panic-fmt = []
