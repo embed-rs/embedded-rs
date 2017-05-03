@@ -1,4 +1,4 @@
-//! AHB1 peripheral reset register (RCC_AHB1RSTR)
+//! RCC AHB3 peripheral reset register (RCC_AHB3RSTR)
 
 bitflags! {
     pub flags Register: u32 {
