@@ -1,4 +1,4 @@
-//! AHB1 peripheral clock register (RCC_AHB1ENR)
+//! RCC AHB1 peripheral clock register (RCC_AHB1ENR)
 
 bitflags! {
     pub flags Register: u32 {
