@@ -309,6 +309,8 @@ impl OutputPin {
 #[derive(Debug, Clone)]
 struct BsrrRef(*mut WriteOnly<stm32f7::BitSetResetRegister>);
 
+unsafe impl Send for BsrrRef {}
+
 impl BsrrRef {
     fn set(&self, pin: Pin, value: bool) {
         let mut bsrr = stm32f7::BitSetResetRegister::default();
