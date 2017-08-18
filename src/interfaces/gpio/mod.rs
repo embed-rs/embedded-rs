@@ -141,7 +141,7 @@ impl Gpio {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Port {
-    PortA,
+    PortA = 0,
     PortB,
     PortC,
     PortD,
